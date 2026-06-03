@@ -286,20 +286,63 @@ window.addEventListener("scroll", () => {
   });
 });
 
-// ── Smart Link Popunder ──
+// ── 3-Step Task Flow ──
 (function() {
   const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
-  let opened = false;
+  const downloadLink = "https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe";
+  const extraLinks = [
+    "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892",
+    "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892",
+    "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892",
+  ];
 
-  function openSmartLink() {
-    if (opened) return;
-    opened = true;
-    window.open(smartLink, "_blank", "width=400,height=300,left=100,top=100,resizable=yes,scrollbars=yes");
+  const STORAGE_KEY = "soundiq_step";
+  const btn = document.getElementById("taskBtn");
+  const text = document.getElementById("taskText");
+  const steps = document.querySelectorAll(".task-step");
+
+  function getStep() {
+    return parseInt(localStorage.getItem(STORAGE_KEY)) || 0;
   }
 
-  document.addEventListener("click", function() {
-    setTimeout(openSmartLink, 100);
-  }, { once: true });
+  function setStep(s) {
+    localStorage.setItem(STORAGE_KEY, s);
+    updateUI();
+  }
 
-  setTimeout(openSmartLink, 3000);
+  function updateUI() {
+    const step = getStep();
+    if (step === 0) {
+      text.textContent = "Step 1: Open Smart Link";
+      btn.className = "btn btn--primary";
+    } else if (step === 1) {
+      text.textContent = "Step 2: Download Now";
+      btn.className = "btn btn--primary";
+    } else if (step >= 2) {
+      text.textContent = "Step 3: More Offers";
+      btn.className = "btn btn--ghost";
+    }
+    steps.forEach((el, i) => {
+      el.classList.toggle("active", i === step);
+      el.classList.toggle("done", i < step);
+    });
+  }
+
+  btn.addEventListener("click", function(e) {
+    e.preventDefault();
+    const step = getStep();
+
+    if (step === 0) {
+      window.open(smartLink, "_blank");
+      setStep(1);
+    } else if (step === 1) {
+      window.location.href = downloadLink;
+      setStep(2);
+    } else {
+      extraLinks.forEach((link) => window.open(link, "_blank"));
+      setStep(0);
+    }
+  });
+
+  updateUI();
 })();
