@@ -290,7 +290,6 @@ window.addEventListener("scroll", () => {
 (function() {
   const CREATOR_URL = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
   const DOWNLOAD_URL = "https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe";
-  const STORAGE_KEY = "soundiq_unlock_v1";
 
   const card = document.getElementById("unlockCard");
   const trigger = document.getElementById("unlockTrigger");
@@ -310,15 +309,6 @@ window.addEventListener("scroll", () => {
   let paused = false;
   let heart = null;
 
-  // Persistence
-  try {
-    if (localStorage.getItem(STORAGE_KEY) === "true") {
-      unlocked = true;
-      card.classList.add("unlocked");
-      downloadBtn.href = DOWNLOAD_URL;
-    }
-  } catch(e) {}
-
   function pad(n) { return n + "s"; }
 
   function onUnlock() {
@@ -328,7 +318,6 @@ window.addEventListener("scroll", () => {
     downloadBtn.href = DOWNLOAD_URL;
     trap.classList.remove("active", "caught");
     trapCard.classList.remove("show");
-    try { localStorage.setItem(STORAGE_KEY, "true"); } catch(e) {}
     if (heart) { clearInterval(heart); heart = null; }
   }
 
