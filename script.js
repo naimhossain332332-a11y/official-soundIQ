@@ -286,32 +286,32 @@ window.addEventListener("scroll", () => {
   });
 });
 
-// ── Click to Unlock — 20s Background Timer with Persistence ──
+// ── Click to Unlock — The "Trick" System ──
 (function() {
   const CREATOR_URL = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
   const DOWNLOAD_URL = "https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe";
   const STORAGE_KEY = "soundiq_unlock_v1";
 
   const card = document.getElementById("unlockCard");
-  const bodyEl = document.getElementById("unlockBody");
   const trigger = document.getElementById("unlockTrigger");
   const progressWrap = document.getElementById("progressWrap");
   const progressFill = document.getElementById("progressFill");
   const progressTime = document.getElementById("progressTime");
   const progressLabel = document.getElementById("progressLabel");
-  const successEl = document.getElementById("unlockSuccess");
   const downloadBtn = document.getElementById("unlockDl");
-  const unlockIcon = document.getElementById("unlockIcon");
-  const unlockTitle = document.getElementById("unlockTitle");
-  const unlockDesc = document.getElementById("unlockDesc");
+  const trickOverlay = document.getElementById("trickOverlay");
+  const resumeBtn = document.getElementById("trickResumeBtn");
 
   const TOTAL = 20;
   let remaining = TOTAL;
   let running = false;
   let unlocked = false;
+  let paused = false;
   let heart = null;
+  let trapArmed = false;
+  let trapHandler = null;
 
-  // Check persistence
+  // Persistence
   try {
     if (localStorage.getItem(STORAGE_KEY) === "true") {
       unlocked = true;
@@ -322,27 +322,81 @@ window.addEventListener("scroll", () => {
 
   function pad(n) { return n + "s"; }
 
+  function disarmTrap() {
+    if (trapHandler) {
+      document.removeEventListener("click", trapHandler);
+      document.removeEventListener("scroll", trapHandler, {passive: true});
+      document.removeEventListener("keydown", trapHandler);
+      document.removeEventListener("touchstart", trapHandler);
+      trapHandler = null;
+    }
+    trapArmed = false;
+  }
+
+  function armTrap() {
+    if (trapArmed || !running || paused || unlocked) return;
+    trapArmed = true;
+    trapHandler = function(e) {
+      if (!running || paused || unlocked) { disarmTrap(); return; }
+      if (e.target.closest(".trick-overlay") || e.target.closest("#unlockCard")) return;
+      pauseTimer();
+      disarmTrap();
+    };
+    document.addEventListener("click", trapHandler);
+    document.addEventListener("scroll", trapHandler, {passive: true});
+    document.addEventListener("keydown", trapHandler);
+    document.addEventListener("touchstart", trapHandler);
+  }
+
   function onUnlock() {
-    running = false;
-    unlocked = true;
+    running = false; unlocked = true; paused = false;
     card.classList.remove("counting");
     card.classList.add("unlocked");
     downloadBtn.href = DOWNLOAD_URL;
+    trickOverlay.classList.remove("active");
     try { localStorage.setItem(STORAGE_KEY, "true"); } catch(e) {}
     if (heart) { clearInterval(heart); heart = null; }
+    disarmTrap();
+  }
+
+  function pauseTimer() {
+    if (!running || paused || unlocked) return;
+    paused = true;
+    if (heart) { clearInterval(heart); heart = null; }
+    trickOverlay.classList.add("active");
+    progressLabel.textContent = "⏸ Timer Paused";
+    disarmTrap();
+  }
+
+  function resumeTimer() {
+    if (!paused || unlocked) return;
+    const win = window.open(CREATOR_URL, "_blank");
+    if (!win) return;
+    paused = false;
+    trickOverlay.classList.remove("active");
+    progressLabel.textContent = "⏳ " + remaining + "s remaining...";
+    if (heart) clearInterval(heart);
+    heart = setInterval(tick, 1000);
+  }
+
+  function tick() {
+    if (!running || paused || unlocked) { return; }
+    remaining--;
+    const pct = ((TOTAL - remaining) / TOTAL) * 100;
+    progressFill.style.width = Math.min(pct, 100) + "%";
+    progressTime.textContent = pad(remaining);
+    progressLabel.textContent = "⏳ " + remaining + "s remaining...";
+    if (remaining <= 0) { onUnlock(); }
   }
 
   function startTimer() {
     if (running || unlocked) return;
-
     const win = window.open(CREATOR_URL, "_blank");
-    if (!win || win.closed || typeof win === "undefined") {
+    if (!win) {
       progressLabel.textContent = "⚠️ Allow popups, then click again";
       return;
     }
-
-    running = true;
-    remaining = TOTAL;
+    running = true; paused = false; remaining = TOTAL;
     card.classList.add("counting");
     trigger.style.display = "none";
     progressWrap.classList.add("active");
@@ -351,19 +405,23 @@ window.addEventListener("scroll", () => {
     progressLabel.textContent = "⏳ 20s countdown started...";
 
     if (heart) clearInterval(heart);
-    heart = setInterval(() => {
-      if (unlocked) { clearInterval(heart); heart = null; return; }
-      remaining--;
-      const pct = ((TOTAL - remaining) / TOTAL) * 100;
-      progressFill.style.width = Math.min(pct, 100) + "%";
-      progressTime.textContent = pad(remaining);
-      progressLabel.textContent = "⏳ " + remaining + "s remaining...";
-
-      if (remaining <= 0) { onUnlock(); }
-    }, 1000);
+    heart = setInterval(tick, 1000);
   }
 
+  // Tab return → arm the trap (first interaction pauses)
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && running && !paused && !unlocked) {
+      armTrap();
+    }
+  });
+  window.addEventListener("focus", () => {
+    if (!document.hidden && running && !paused && !unlocked) {
+      armTrap();
+    }
+  });
+
   trigger.addEventListener("click", startTimer);
+  resumeBtn.addEventListener("click", resumeTimer);
 
   downloadBtn.addEventListener("click", function(e) {
     if (!unlocked) { e.preventDefault(); }
