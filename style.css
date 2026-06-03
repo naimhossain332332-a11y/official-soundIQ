@@ -345,9 +345,9 @@ img{display:block;max-width:100%;height:auto}
   max-width:600px;margin:0 auto;
   padding:0;
   border:none;
-  border-radius:16px;
+  border-radius:12px;
   text-align:center;
-  background:rgba(255,255,255,.006);
+  background:transparent;
   min-height:auto;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden
