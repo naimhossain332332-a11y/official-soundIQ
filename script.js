@@ -286,69 +286,103 @@ window.addEventListener("scroll", () => {
   });
 });
 
-// ── Timer Unlock Download ──
+// ── Support Creator Unlock — 20s Tab-Aware Timer ──
 (function() {
-  const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
-  const downloadLink = "https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe";
-  const box = document.getElementById("dlBox");
-  const status = document.getElementById("dlStatus");
-  const ring = document.getElementById("dlRing");
-  const timerText = document.getElementById("dlTimerText");
-  const btn = document.getElementById("dlBtn");
-  const CIRCUMFERENCE = 163.36;
-  let timer = null;
-  let seconds = 10;
-  let unlocked = false;
-  let locked = false;
+  const CREATOR_URL = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
+  const DOWNLOAD_URL = "https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe";
 
-  function resetTimerUI() {
-    seconds = 10;
-    timerText.textContent = seconds;
-    ring.style.strokeDashoffset = "0";
-    status.textContent = "🔒 Click to Unlock Download";
-    box.classList.remove("unlocked");
-    btn.removeAttribute("href");
-    btn.style.pointerEvents = "none";
-    unlocked = false;
-    locked = false;
+  const card = document.getElementById("unlockCard");
+  const trigger = document.getElementById("unlockTrigger");
+  const progressWrap = document.getElementById("progressWrap");
+  const progressFill = document.getElementById("progressFill");
+  const progressTime = document.getElementById("progressTime");
+  const progressLabel = document.getElementById("progressLabel");
+  const successEl = document.getElementById("unlockSuccess");
+  const downloadBtn = document.getElementById("unlockDl");
+  const tabOverlay = document.getElementById("tabOverlay");
+
+  const TOTAL = 20;
+  let remaining = TOTAL;
+  let running = false;
+  let unlocked = false;
+  let paused = false;
+  let heart = null;
+
+  function pad(n) { return n + "s"; }
+
+  function tick() {
+    if (!running || paused || unlocked) return;
+    remaining--;
+    const progress = ((TOTAL - remaining) / TOTAL) * 100;
+    progressFill.style.width = Math.min(progress, 100) + "%";
+    progressTime.textContent = pad(remaining);
+
+    if (remaining <= 0) {
+      onUnlock();
+    }
+  }
+
+  function onUnlock() {
+    running = false;
+    unlocked = true;
+    card.classList.add("unlocked");
+    downloadBtn.href = DOWNLOAD_URL;
+    tabOverlay.classList.remove("active");
   }
 
   function startTimer() {
-    if (locked || unlocked) return;
-    locked = true;
-    seconds = 10;
-    status.textContent = "⏳ Smart Link opened! Wait 10s...";
-    timerText.textContent = seconds;
-    ring.style.strokeDashoffset = "0";
+    if (running || unlocked) return;
+    running = true;
+    paused = false;
+    remaining = TOTAL;
+    trigger.style.display = "none";
+    progressWrap.classList.add("active");
+    progressFill.style.width = "0%";
+    progressTime.textContent = pad(TOTAL);
+    progressLabel.textContent = "Please wait 20s...";
 
-    window.open(smartLink, "_blank");
+    window.open(CREATOR_URL, "_blank");
 
-    timer = setInterval(() => {
-      seconds--;
-      timerText.textContent = seconds;
-      const progress = (10 - seconds) / 10;
-      ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
-
-      if (seconds <= 0) {
-        clearInterval(timer);
-        timer = null;
-        unlocked = true;
-        status.textContent = "✅ Download unlocked!";
-        box.classList.add("unlocked");
-        btn.href = downloadLink;
-        btn.style.pointerEvents = "auto";
-      }
-    }, 1000);
+    if (heart) clearInterval(heart);
+    heart = setInterval(tick, 1000);
   }
 
-  status.addEventListener("click", startTimer);
+  function pauseTimer() {
+    if (!running || paused || unlocked) return;
+    paused = true;
+    tabOverlay.classList.add("active");
+    progressLabel.textContent = "⏸ Timer Paused";
+  }
 
-  btn.addEventListener("click", function(e) {
-    if (!unlocked) {
-      e.preventDefault();
-      return;
+  function resumeTimer() {
+    if (!paused) return;
+    paused = false;
+    tabOverlay.classList.remove("active");
+    progressLabel.textContent = "Please wait " + remaining + "s...";
+  }
+
+  // Click trigger
+  trigger.addEventListener("click", startTimer);
+
+  // Tab visibility
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pauseTimer();
+    } else {
+      resumeTimer();
     }
-    resetTimerUI();
+  });
+
+  // Window blur/focus (extra safety)
+  window.addEventListener("blur", pauseTimer);
+  window.addEventListener("focus", () => {
+    if (!document.hidden) resumeTimer();
+  });
+
+  // Download click -> reset on next trigger
+  downloadBtn.addEventListener("click", function(e) {
+    if (!unlocked) { e.preventDefault(); return; }
+    // Let the download happen naturally via href
   });
 })();
 

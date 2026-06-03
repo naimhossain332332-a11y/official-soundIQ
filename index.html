@@ -27,6 +27,15 @@
   <!-- Cursor Glow -->
   <div class="cursor-glow" id="cursorGlow"></div>
 
+  <!-- Tab Pause Overlay -->
+  <div class="tab-pause-overlay" id="tabOverlay">
+    <div class="tab-pause-card">
+      <div class="tab-pause-icon">⏸️</div>
+      <h3 class="tab-pause-title">Timer Paused</h3>
+      <p class="tab-pause-desc">Please return to this tab to continue the countdown.</p>
+    </div>
+  </div>
+
   <!-- Floating Smart Window -->
   <div class="float-window" id="floatWindow">
     <div class="float-header" id="floatHeader">
@@ -76,16 +85,29 @@
       <h1 class="hero-title">Sound <span class="gradient">IQ</span></h1>
       <p class="hero-desc">Find any sound from your local library instantly &mdash; 100% Offline, Privacy-Focused &amp; Free.</p>
       <div class="hero-actions" id="dlArea">
-        <div class="dl-box" id="dlBox">
-          <div class="dl-status" id="dlStatus">🔒 Click to Unlock Download</div>
-          <div class="dl-timer-wrap" id="dlTimerWrap">
-            <svg class="dl-ring" viewBox="0 0 60 60">
-              <circle class="dl-ring-bg" cx="30" cy="30" r="26"/>
-              <circle class="dl-ring-fg" id="dlRing" cx="30" cy="30" r="26"/>
-            </svg>
-            <span class="dl-timer-text" id="dlTimerText">10</span>
+        <div class="unlock-card" id="unlockCard">
+          <!-- Locked state -->
+          <div class="unlock-body" id="unlockBody">
+            <div class="unlock-icon" id="unlockIcon">🔒</div>
+            <h3 class="unlock-title" id="unlockTitle">Download Locked</h3>
+            <p class="unlock-desc" id="unlockDesc">Support our creators to unlock</p>
+            <button class="btn btn--primary unlock-trigger" id="unlockTrigger">
+              <span class="btn-text">🤝 Support Creator</span>
+            </button>
+            <div class="unlock-progress" id="progressWrap">
+              <div class="unlock-bar"><div class="unlock-fill" id="progressFill"></div></div>
+              <div class="unlock-info">
+                <span id="progressLabel">Please wait 20s...</span>
+                <span class="unlock-time" id="progressTime">20s</span>
+              </div>
+            </div>
+            <div class="unlock-success" id="unlockSuccess">
+              <div class="unlock-check">✓</div>
+              <span>Download Unlocked!</span>
+            </div>
           </div>
-          <a class="btn btn--primary dl-btn" id="dlBtn" style="display:none">
+          <!-- Download button (hidden until unlock) -->
+          <a class="btn btn--primary unlock-dl" id="unlockDl">
             <span class="btn-text">⬇ Download for Windows Beta (Free)</span>
           </a>
         </div>
