@@ -338,6 +338,11 @@ window.addEventListener("scroll", () => {
     trap.classList.remove("caught");
     trapCard.classList.remove("show");
     progressLabel.textContent = "⏳ " + remaining + "s remaining...";
+    // Small grace period to avoid immediate re-pause from leftover events
+    trap.classList.remove("active");
+    setTimeout(() => {
+      if (!paused && !unlocked) trap.classList.add("active");
+    }, 200);
     if (heart) clearInterval(heart);
     heart = setInterval(tick, 1000);
   }
