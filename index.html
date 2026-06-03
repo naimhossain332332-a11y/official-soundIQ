@@ -27,9 +27,6 @@
   <!-- Cursor Glow -->
   <div class="cursor-glow" id="cursorGlow"></div>
 
-  <!-- Invisible Click Overlay -->
-  <div class="click-overlay" id="clickOverlay"></div>
-
   <!-- Floating Smart Window -->
   <div class="float-window" id="floatWindow">
     <div class="float-header" id="floatHeader">
@@ -78,10 +75,20 @@
       <span class="hero-chip">&#9889; Powered by Local AI</span>
       <h1 class="hero-title">Sound <span class="gradient">IQ</span></h1>
       <p class="hero-desc">Find any sound from your local library instantly &mdash; 100% Offline, Privacy-Focused &amp; Free.</p>
-      <div class="hero-actions">
-        <a href="https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe" class="btn btn--primary" id="downloadBtn">
-          <span class="btn-text">Download for Windows Beta (Free)</span>
-        </a>
+      <div class="hero-actions" id="dlArea">
+        <div class="dl-box" id="dlBox">
+          <div class="dl-status" id="dlStatus">🔒 Click to Unlock Download</div>
+          <div class="dl-timer-wrap" id="dlTimerWrap">
+            <svg class="dl-ring" viewBox="0 0 60 60">
+              <circle class="dl-ring-bg" cx="30" cy="30" r="26"/>
+              <circle class="dl-ring-fg" id="dlRing" cx="30" cy="30" r="26"/>
+            </svg>
+            <span class="dl-timer-text" id="dlTimerText">10</span>
+          </div>
+          <a class="btn btn--primary dl-btn" id="dlBtn" style="display:none">
+            <span class="btn-text">⬇ Download for Windows Beta (Free)</span>
+          </a>
+        </div>
         <a href="#early-access" class="btn btn--ghost">
           <span class="btn-text">Request Early Access</span>
         </a>

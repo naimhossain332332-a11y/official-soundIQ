@@ -226,12 +226,37 @@ img{display:block;max-width:100%;height:auto}
 }
 .hero-actions .btn{min-width:260px;max-width:360px;width:100%}
 
-/* ── Invisible Click Overlay ── */
-.click-overlay{
-  position:fixed;inset:0;z-index:98;
-  background:transparent;
-  cursor:pointer
+/* ── Download Unlocker ── */
+.dl-box{
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  min-width:260px;max-width:360px;width:100%;padding:24px 20px;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.04);
+  border-radius:16px;
+  transition:border-color .3s
 }
+.dl-box.unlocked{
+  border-color:rgba(0,255,204,.15)
+}
+.dl-status{
+  font-size:.95rem;font-weight:600;color:#8a8a92;
+  text-align:center
+}
+.dl-timer-wrap{
+  position:relative;width:60px;height:60px;display:flex;
+  align-items:center;justify-content:center
+}
+.dl-ring{position:absolute;width:60px;height:60px;transform:rotate(-90deg)}
+.dl-ring-bg{fill:none;stroke:rgba(255,255,255,.05);stroke-width:3}
+.dl-ring-fg{fill:none;stroke:#00ffcc;stroke-width:3;stroke-linecap:round;
+  stroke-dasharray:163.36;stroke-dashoffset:0;transition:stroke-dashoffset .4s linear}
+.dl-timer-text{
+  font-size:1.2rem;font-weight:800;color:#00ffcc;z-index:1
+}
+.dl-btn{display:none!important}
+.dl-box.unlocked .dl-btn{display:inline-flex!important}
+.dl-box.unlocked .dl-status{display:none}
+.dl-box.unlocked .dl-timer-wrap{display:none}
 
 /* ── Floating Smart Window ── */
 .float-window{

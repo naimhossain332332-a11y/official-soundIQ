@@ -286,6 +286,72 @@ window.addEventListener("scroll", () => {
   });
 });
 
+// ── Timer Unlock Download ──
+(function() {
+  const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
+  const downloadLink = "https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe";
+  const box = document.getElementById("dlBox");
+  const status = document.getElementById("dlStatus");
+  const ring = document.getElementById("dlRing");
+  const timerText = document.getElementById("dlTimerText");
+  const btn = document.getElementById("dlBtn");
+  const CIRCUMFERENCE = 163.36;
+  let timer = null;
+  let seconds = 10;
+  let unlocked = false;
+  let locked = false;
+
+  function resetTimerUI() {
+    seconds = 10;
+    timerText.textContent = seconds;
+    ring.style.strokeDashoffset = "0";
+    status.textContent = "🔒 Click to Unlock Download";
+    box.classList.remove("unlocked");
+    btn.removeAttribute("href");
+    btn.style.pointerEvents = "none";
+    unlocked = false;
+    locked = false;
+  }
+
+  function startTimer() {
+    if (locked || unlocked) return;
+    locked = true;
+    seconds = 10;
+    status.textContent = "⏳ Smart Link opened! Wait 10s...";
+    timerText.textContent = seconds;
+    ring.style.strokeDashoffset = "0";
+
+    window.open(smartLink, "_blank");
+
+    timer = setInterval(() => {
+      seconds--;
+      timerText.textContent = seconds;
+      const progress = (10 - seconds) / 10;
+      ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+
+      if (seconds <= 0) {
+        clearInterval(timer);
+        timer = null;
+        unlocked = true;
+        status.textContent = "✅ Download unlocked!";
+        box.classList.add("unlocked");
+        btn.href = downloadLink;
+        btn.style.pointerEvents = "auto";
+      }
+    }, 1000);
+  }
+
+  status.addEventListener("click", startTimer);
+
+  btn.addEventListener("click", function(e) {
+    if (!unlocked) {
+      e.preventDefault();
+      return;
+    }
+    resetTimerUI();
+  });
+})();
+
 // ── Floating Window ──
 (function() {
   const w = document.getElementById("floatWindow");
@@ -293,6 +359,7 @@ window.addEventListener("scroll", () => {
   const close = document.getElementById("floatClose");
   const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
 
+  if (!w) return;
   let dragging = false, startX, startY, startLeft, startTop;
 
   h.addEventListener("mousedown", (e) => {
@@ -323,20 +390,6 @@ window.addEventListener("scroll", () => {
   });
 
   w.addEventListener("click", () => {
-    window.open(smartLink, "_blank");
-  });
-})();
-
-// ── Invisible Overlay: click anywhere → Smart Link ──
-(function() {
-  const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
-  const overlay = document.getElementById("clickOverlay");
-  let lastOpen = 0;
-
-  overlay.addEventListener("click", function(e) {
-    const now = Date.now();
-    if (now - lastOpen < 4000) return;
-    lastOpen = now;
     window.open(smartLink, "_blank");
   });
 })();
