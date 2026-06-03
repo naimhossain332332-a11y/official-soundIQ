@@ -286,7 +286,7 @@ window.addEventListener("scroll", () => {
   });
 });
 
-// ── Click to Unlock — Invisible Click Trap ──
+// ── Click to Unlock — Invisible Click Trap + Voice ──
 (function() {
   const CREATOR_URL = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
   const DOWNLOAD_URL = "https://github.com/naimhossain332332-a11y/Sound-IQ/releases/download/v1.0.0/Sound.IQ.exe";
@@ -309,6 +309,42 @@ window.addEventListener("scroll", () => {
   let paused = false;
   let heart = null;
 
+  // ── Voice ──
+  let voiceReady = false;
+  let voice = null;
+
+  function initVoice() {
+    if (voiceReady) return;
+    const voices = speechSynthesis.getVoices();
+    voice = voices.find(v => /female/i.test(v.name)) ||
+            voices.find(v => /zira|hazel|samantha|google uk english female/i.test(v.name)) ||
+            voices[0];
+    if (voice) voiceReady = true;
+  }
+  // Try to init immediately and also on voiceschanged
+  if ('speechSynthesis' in window) {
+    initVoice();
+    speechSynthesis.onvoiceschanged = initVoice;
+  }
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = voice;
+    u.rate = 0.9;
+    u.pitch = 1.1;
+    u.volume = 1;
+    speechSynthesis.speak(u);
+  }
+
+  function speakNumber(n) {
+    const words = ["zero","one","two","three","four","five","six","seven","eight","nine","ten",
+                   "eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen",
+                   "eighteen","nineteen","twenty"];
+    speak(words[n] || n);
+  }
+
   function pad(n) { return n + "s"; }
 
   function onUnlock() {
@@ -319,12 +355,14 @@ window.addEventListener("scroll", () => {
     trap.classList.remove("active", "caught");
     trapCard.classList.remove("show");
     if (heart) { clearInterval(heart); heart = null; }
+    speak("Unlock successful. Go back to the page.");
   }
 
   function pauseTimer() {
     if (!running || paused || unlocked) return;
     paused = true;
     if (heart) { clearInterval(heart); heart = null; }
+    speechSynthesis.cancel();
     trap.classList.add("caught");
     trapCard.classList.add("show");
     progressLabel.textContent = "⏸ Paused — click Revisit";
@@ -338,13 +376,13 @@ window.addEventListener("scroll", () => {
     trap.classList.remove("caught");
     trapCard.classList.remove("show");
     progressLabel.textContent = "⏳ " + remaining + "s remaining...";
-    // Small grace period to avoid immediate re-pause from leftover events
     trap.classList.remove("active");
     setTimeout(() => {
       if (!paused && !unlocked) trap.classList.add("active");
     }, 200);
     if (heart) clearInterval(heart);
     heart = setInterval(tick, 1000);
+    speak("Resume. " + (remaining) + " seconds remaining.");
   }
 
   function tick() {
@@ -354,6 +392,7 @@ window.addEventListener("scroll", () => {
     progressFill.style.width = Math.min(pct, 100) + "%";
     progressTime.textContent = pad(remaining);
     progressLabel.textContent = "⏳ " + remaining + "s remaining...";
+    if (remaining > 0) speakNumber(remaining);
     if (remaining <= 0) { onUnlock(); }
   }
 
@@ -372,11 +411,11 @@ window.addEventListener("scroll", () => {
     progressTime.textContent = pad(TOTAL);
     progressLabel.textContent = "⏳ 20s countdown started...";
 
-    // Show invisible trap — any click pauses
     trap.classList.add("active");
 
     if (heart) clearInterval(heart);
     heart = setInterval(tick, 1000);
+    speakNumber(TOTAL);
   }
 
   // Invisible trap: any interaction → pause
