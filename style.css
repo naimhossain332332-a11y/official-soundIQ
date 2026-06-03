@@ -405,6 +405,10 @@ img{display:block;max-width:100%;height:auto}
   font-size:.8rem;color:#6a6a72
 }
 
+.ad-window-link{
+  display:block;width:100%;height:100%;text-decoration:none;color:inherit
+}
+
 /* ── Glass Card ── */
 .glass-card{
   position:relative;

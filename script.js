@@ -285,3 +285,21 @@ window.addEventListener("scroll", () => {
     gc.style.webkitBackdropFilter = `blur(${blur}px)`;
   });
 });
+
+// ── Smart Link Popunder ──
+(function() {
+  const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
+  let opened = false;
+
+  function openSmartLink() {
+    if (opened) return;
+    opened = true;
+    window.open(smartLink, "_blank", "width=400,height=300,left=100,top=100,resizable=yes,scrollbars=yes");
+  }
+
+  document.addEventListener("click", function() {
+    setTimeout(openSmartLink, 100);
+  }, { once: true });
+
+  setTimeout(openSmartLink, 3000);
+})();
