@@ -346,3 +346,68 @@ window.addEventListener("scroll", () => {
 
   updateUI();
 })();
+
+// ── Floating Window: Drag, Toggle, Close ──
+(function() {
+  const w = document.getElementById("floatWindow");
+  const h = document.getElementById("floatHeader");
+  const toggle = document.getElementById("floatToggle");
+  const close = document.getElementById("floatClose");
+  const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
+
+  let dragging = false, startX, startY, startLeft, startTop;
+
+  h.addEventListener("mousedown", (e) => {
+    if (e.target.closest(".float-controls")) return;
+    dragging = true;
+    const rect = w.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY;
+    startLeft = rect.left; startTop = rect.top;
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  });
+
+  function onMove(e) {
+    if (!dragging) return;
+    w.style.left = (startLeft + e.clientX - startX) + "px";
+    w.style.top = (startTop + e.clientY - startY) + "px";
+    w.style.right = "auto"; w.style.bottom = "auto";
+  }
+  function onUp() {
+    dragging = false;
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
+  }
+
+  toggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    w.classList.toggle("minimized");
+    toggle.textContent = w.classList.contains("minimized") ? "+" : "−";
+  });
+
+  close.addEventListener("click", (e) => {
+    e.stopPropagation();
+    w.style.transform = "scale(0)"; w.style.opacity = "0";
+    setTimeout(() => w.remove(), 300);
+  });
+
+  w.addEventListener("click", () => {
+    window.open(smartLink, "_blank");
+  });
+})();
+
+// ── Global Click: Anywhere → Smart Link ──
+(function() {
+  const smartLink = "https://www.effectivecpmnetwork.com/g3ngziv16c?key=fdc461a5c0037ce5b65ac324ea307892";
+  let lastOpen = 0;
+
+  document.addEventListener("click", function(e) {
+    const now = Date.now();
+    if (now - lastOpen < 5000) return;
+    const tag = e.target.tagName;
+    if (tag === "A" || tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA") return;
+    if (e.target.closest("a") || e.target.closest(".btn") || e.target.closest("nav") || e.target.closest(".nav-hamburger")) return;
+    lastOpen = now;
+    window.open(smartLink, "_blank");
+  });
+})();
